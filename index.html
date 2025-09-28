@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>色ゆらぎグラデーションジェネレーター</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    input[type="number"] { width: 60px; }
+    .color-block {
+      display: inline-block;
+      width: 80px;
+      height: 40px;
+      margin: 4px;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+      vertical-align: middle;
+    }
+    .result { margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+  <h1>色ゆらぎグラデーションジェネレーター</h1>
+  <label>中心色 (R): <input id="r" type="number" min="0" max="255" value="178"></label>
+  <label>G: <input id="g" type="number" min="0" max="255" value="53"></label>
+  <label>B: <input id="b" type="number" min="0" max="255" value="231"></label>
+  <br>
+  <label>ゆらぎ幅（±）: <input id="range" type="number" min="1" max="64" value="16"></label>
+  <label>生成数: <input id="num" type="number" min="2" max="20" value="5"></label>
+  <button onclick="generate()">生成</button>
+
+  <div id="colors" class="result"></div>
+  <div id="css" class="result"></div>
+
+  <script>
+    function randRgb(center, width) {
+      let v = center + Math.floor(Math.random() * (width * 2 + 1)) - width;
+      return Math.max(0, Math.min(255, v));
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
+    }
+
+    function generate() {
+      let center = [parseInt(r.value,10), parseInt(g.value,10), parseInt(b.value,10)];
+      let width = parseInt(range.value, 10);
+      let num = parseInt(num.value, 10);
+
+      let colors = [];
+      for (let i = 0; i < num; i++) {
+        let rgb = [
+          randRgb(center[0], width),
+          randRgb(center[1], width),
+          randRgb(center[2], width)
+        ];
+        colors.push(rgb);
+      }
+
+      let colorBlocks = colors.map(rgb =>
+        `<div class="color-block" style="background:${rgbToHex(...rgb)}" title="rgb(${rgb.join(",")})">${rgbToHex(...rgb)}</div>`
+      ).join("");
+      document.getElementById("colors").innerHTML = colorBlocks;
+
+      // CSSグラデーションコード自動生成（linear-gradient）
+      let gradStr = colors.map(rgb => `rgb(${rgb.join(",")})`).join(", ");
+      let cssCode = `background: linear-gradient(90deg, ${gradStr});`;
+      document.getElementById("css").innerHTML =
+        `<b>CSSグラデーション例：</b><br><code>${cssCode}</code>`;
+    }
+  </script>
+</body>
+</html>
