@@ -42,12 +42,19 @@
     }
 
     function generate() {
-      let center = [parseInt(r.value,10), parseInt(g.value,10), parseInt(b.value,10)];
-      let width = parseInt(range.value, 10);
-      let num = parseInt(num.value, 10);
+      // id属性のあるinputから値取得
+      let r = document.getElementById("r").value;
+      let g = document.getElementById("g").value;
+      let b = document.getElementById("b").value;
+      let range = document.getElementById("range").value;
+      let num = document.getElementById("num").value;
+
+      let center = [parseInt(r,10), parseInt(g,10), parseInt(b,10)];
+      let width = parseInt(range, 10);
+      let n = parseInt(num, 10);
 
       let colors = [];
-      for (let i = 0; i < num; i++) {
+      for (let i = 0; i < n; i++) {
         let rgb = [
           randRgb(center[0], width),
           randRgb(center[1], width),
