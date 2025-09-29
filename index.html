@@ -38,4 +38,63 @@
   <button onclick="generate()">生成</button>
 
   <div id="colors" class="result"></div>
-  <div
+  <div id="css" class="result"></div>
+
+  <script>
+    function randRgb(center, width) {
+      let v = center + Math.floor(Math.random() * (width * 2 + 1)) - width;
+      return Math.max(0, Math.min(255, v));
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
+    }
+
+    function generate() {
+      let r = document.getElementById("r").value;
+      let g = document.getElementById("g").value;
+      let b = document.getElementById("b").value;
+      let range = document.getElementById("range").value;
+      let num = document.getElementById("num").value;
+
+      let center = [parseInt(r,10), parseInt(g,10), parseInt(b,10)];
+      let width = parseInt(range, 10);
+      let n = parseInt(num, 10);
+
+      let colors = [];
+      for (let i = 0; i < n; i++) {
+        let rgb = [
+          randRgb(center[0], width),
+          randRgb(center[1], width),
+          randRgb(center[2], width)
+        ];
+        colors.push(rgb);
+      }
+
+      let colorBlocks = colors.map(rgb =>
+        `<div class="color-block" style="background:${rgbToHex(...rgb)};color:${getTextColor(rgb)};" title="rgb(${rgb.join(",")})">
+          <span><b>HEX：</b>${rgbToHex(...rgb)}</span><br>
+          <span><b>RGB：</b>rgb(${rgb.join(",")})</span><br>
+          <span><b>数値：</b>${rgb.join(",")}</span>
+        </div>`
+      ).join("");
+      document.getElementById("colors").innerHTML = colorBlocks;
+
+      // CSSグラデーションコード自動生成（linear-gradient）
+      let gradStr = colors.map(rgb => `rgb(${rgb.join(",")})`).join(", ");
+      let cssCode = `background: linear-gradient(90deg, ${gradStr});`;
+
+      let rgbNumbers = colors.map(rgb => rgb.join(",")).join(" / ");
+      document.getElementById("css").innerHTML =
+        `<b>CSSグラデーション例：</b><br><code>${cssCode}</code>
+         <br><b>数値のみ一覧：</b><br><code>${rgbNumbers}</code>`;
+    }
+
+    // 明度次第で見やすいテキスト色を選択
+    function getTextColor(rgb) {
+      let brightness = (rgb[0]*299 + rgb[1]*587 + rgb[2]*114) / 1000;
+      return brightness < 128 ? "#fff" : "#222";
+    }
+  </script>
+</body>
+</html>
